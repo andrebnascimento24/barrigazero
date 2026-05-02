@@ -2,568 +2,834 @@
 <html lang="pt-PT" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Protocolo Barriga Zero | Teatro 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Barriga Zero — Teatro 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        dark: { 900: '#0f172a', 800: '#1e293b', 700: '#334155' },
-                        brand: { 500: '#10b981', 600: '#059669' } // Emerald for progress
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 900: '#14532d' },
+                        darkbg: '#0f172a',
+                        darkcard: '#1e293b',
                     }
                 }
             }
         }
     </script>
     <style>
+        /* Custom Styles & Scrollbars */
         body { -webkit-tap-highlight-color: transparent; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        
+        .glass-active { color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        .glass-inactive { color: #94a3b8; }
+        .dark .glass-inactive { color: #334155; }
+        
+        /* Hide all sections by default */
+        section[data-view] { display: none; }
+        section[data-view].active { display: block; }
+        
+        /* Smooth transitions */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-dark-900 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+<body class="bg-gray-50 text-slate-800 dark:bg-darkbg dark:text-slate-200 font-sans antialiased pb-20 md:pb-0 transition-colors duration-300">
 
-    <!-- Header -->
-    <header class="sticky top-0 z-40 bg-white/80 dark:bg-dark-800/80 backdrop-blur-md border-b border-slate-200 dark:border-dark-700">
-        <div class="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
+    <!-- Top Navigation / Header -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-darkcard/80 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <i data-lucide="activity" class="text-brand-500"></i>
-                <h1 class="font-bold tracking-tight text-lg">Protocolo Zero</h1>
+                <i class="fa-solid fa-masks-theater text-brand-500 text-xl"></i>
+                <h1 class="font-bold text-lg tracking-tight hidden sm:block">Protocolo Barriga Zero <span class="text-brand-500 font-normal text-sm ml-1">2026</span></h1>
+                <h1 class="font-bold text-lg tracking-tight sm:hidden">Barriga Zero <span class="text-brand-500 text-sm">2026</span></h1>
             </div>
-            <button id="themeToggle" class="p-2 rounded-full bg-slate-100 dark:bg-dark-700 text-slate-600 dark:text-slate-300">
-                <i data-lucide="moon" id="themeIcon"></i>
-            </button>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="header-date" class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider"></p>
+                    <p id="header-day-badge" class="text-sm font-bold text-brand-600 dark:text-brand-400"></p>
+                </div>
+                <button id="theme-toggle" class="p-2 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 transition">
+                    <i class="fa-solid fa-moon dark:hidden text-slate-600"></i>
+                    <i class="fa-solid fa-sun hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
         </div>
     </header>
 
+    <!-- Global Rehearsal Warning -->
+    <div class="max-w-4xl mx-auto px-4 mt-4">
+        <div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-3 rounded-r-lg shadow-sm flex gap-3 items-start">
+            <i class="fa-solid fa-circle-exclamation text-amber-500 mt-1"></i>
+            <div>
+                <p class="text-sm font-medium text-amber-800 dark:text-amber-200">Aviso de Ensaio</p>
+                <p class="text-xs text-amber-700 dark:text-amber-300 mt-0.5">Quando houver ensaio hoje, faz antes a rotina de mobilidade (25 min) e não acumules treino pesado no mesmo período.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content Area -->
-    <main class="max-w-md mx-auto px-4 pt-4 pb-24 min-h-screen" id="app-content">
-        <!-- Rendered by JS -->
+    <main class="max-w-4xl mx-auto p-4 min-h-[80vh]">
+        
+        <!-- DASHBOARD VIEW -->
+        <section data-view="dashboard" class="active fade-in space-y-6">
+            <!-- Hero Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">Dia Atual</p>
+                    <p class="text-2xl font-bold mt-1 text-brand-600 dark:text-brand-400" id="dash-day">Dia 1</p>
+                    <p class="text-xs text-gray-400 mt-1" id="dash-date">2 de maio</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">Estreia em</p>
+                    <p class="text-2xl font-bold mt-1 text-slate-800 dark:text-white" id="dash-countdown">35 dias</p>
+                    <p class="text-xs text-gray-400 mt-1">6 de junho</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 col-span-2 md:col-span-2 flex flex-col justify-center">
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">Progresso de Água (3L)</p>
+                        <span id="dash-water-text" class="text-xs font-bold text-blue-500">0/12</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5">
+                        <div id="dash-water-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Overview -->
+            <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
+                <div class="p-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
+                    <h2 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-bolt text-yellow-500"></i> O Plano para Hoje</h2>
+                    <span id="dash-type-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-700">Força 💪</span>
+                </div>
+                
+                <div class="p-4 grid md:grid-cols-2 gap-6">
+                    <!-- Metas -->
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Metas da Semana</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center bg-gray-50 dark:bg-slate-800 p-2 rounded">
+                                <span class="text-sm"><i class="fa-solid fa-fire text-orange-500 w-5"></i> Calorias</span>
+                                <span class="font-bold font-mono" id="dash-cal">2120 kcal</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-gray-50 dark:bg-slate-800 p-2 rounded">
+                                <span class="text-sm"><i class="fa-solid fa-drumstick-bite text-red-400 w-5"></i> Proteína</span>
+                                <span class="font-bold font-mono" id="dash-pro">140g</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-gray-50 dark:bg-slate-800 p-2 rounded">
+                                <span class="text-sm"><i class="fa-solid fa-shoe-prints text-brand-500 w-5"></i> Passos</span>
+                                <span class="font-bold font-mono" id="dash-steps">8.000</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ações Rápidas -->
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Atalho Rápido</h3>
+                        <div class="space-y-2">
+                            <button onclick="switchTab('tracking')" class="w-full text-left bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 p-3 rounded-lg border border-blue-100 dark:border-blue-800 transition flex items-center gap-3">
+                                <div class="bg-blue-100 dark:bg-blue-800 p-2 rounded-full text-blue-600 dark:text-blue-300"><i class="fa-solid fa-check-double"></i></div>
+                                <div>
+                                    <p class="font-bold text-sm text-blue-900 dark:text-blue-100">Abrir Tracking Diário</p>
+                                    <p class="text-xs text-blue-600 dark:text-blue-300">Regista água, treino e hábitos</p>
+                                </div>
+                            </button>
+                            <button onclick="switchTab('diet')" class="w-full text-left bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/20 dark:hover:bg-brand-900/40 p-3 rounded-lg border border-brand-100 dark:border-brand-800 transition flex items-center gap-3">
+                                <div class="bg-brand-100 dark:bg-brand-800 p-2 rounded-full text-brand-600 dark:text-brand-300"><i class="fa-solid fa-utensils"></i></div>
+                                <div>
+                                    <p class="font-bold text-sm text-brand-900 dark:text-brand-100">Ver Refeições de Hoje</p>
+                                    <p class="text-xs text-brand-600 dark:text-brand-300" id="dash-next-meal">Carregando...</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRACKING VIEW (O Meu Dia) -->
+        <section data-view="tracking" class="fade-in space-y-6">
+            <h2 class="font-bold text-2xl mb-4">O Meu Dia <span class="text-sm font-normal text-gray-500 ml-2">Monitorização Diária</span></h2>
+            
+            <!-- Água -->
+            <div class="bg-white dark:bg-darkcard p-5 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-droplet text-blue-500"></i> Hidratação (3L)</h3>
+                    <button onclick="resetWater()" class="text-xs text-gray-500 hover:text-red-500 transition"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+                </div>
+                <div class="grid grid-cols-6 sm:grid-cols-12 gap-2 mb-4" id="water-grid">
+                    <!-- Gerado via JS -->
+                </div>
+                <p id="water-status" class="text-center text-sm font-medium text-slate-600 dark:text-slate-400">0 / 12 copos — 0.0L de 3L</p>
+            </div>
+
+            <!-- Treino / Atividade -->
+            <div class="bg-white dark:bg-darkcard p-5 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <h3 class="font-bold text-lg flex items-center gap-2 mb-4"><i class="fa-solid fa-dumbbell text-purple-500"></i> Atividade de Hoje</h3>
+                
+                <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-lg p-4 mb-4">
+                    <p class="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase mb-1">Missão do Dia</p>
+                    <p class="text-lg font-bold text-purple-900 dark:text-purple-100" id="track-mission">Carregando...</p>
+                </div>
+
+                <!-- Timer de Cardio (Visível apenas em dias de cardio) -->
+                <div id="cardio-timer-container" class="hidden mb-6 bg-slate-100 dark:bg-slate-800 p-4 rounded-lg text-center">
+                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase">Cronómetro Zona 2 (40 min)</p>
+                    <div class="text-5xl font-mono font-bold text-slate-800 dark:text-white mb-4 tracking-wider" id="timer-display">40:00</div>
+                    <div class="flex justify-center gap-3">
+                        <button onclick="toggleTimer()" id="btn-timer-toggle" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg font-bold transition flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Iniciar
+                        </button>
+                        <button onclick="resetTimer()" class="bg-gray-300 hover:bg-gray-400 dark:bg-slate-600 dark:hover:bg-slate-500 text-slate-800 dark:text-white px-4 py-2 rounded-lg font-bold transition">
+                            <i class="fa-solid fa-stop"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <label class="flex items-center gap-3 cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg border border-transparent hover:border-gray-200 dark:hover:border-slate-700 transition">
+                    <input type="checkbox" id="activity-checkbox" class="w-6 h-6 text-brand-500 rounded border-gray-300 focus:ring-brand-500 focus:ring-2 bg-white dark:bg-slate-700" onchange="updateSummary()">
+                    <span class="font-bold text-lg select-none">Atividade de hoje concluída ✅</span>
+                </label>
+            </div>
+
+            <!-- Resumo do Dia -->
+            <div class="bg-white dark:bg-darkcard p-5 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-list-check text-brand-500"></i> Check-in Diário</h3>
+                    <span id="summary-counter" class="text-sm font-bold bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">0 / 5 ✅</span>
+                </div>
+                
+                <div class="space-y-3" id="summary-checks">
+                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" disabled id="check-act" class="w-5 h-5 rounded text-brand-500 bg-gray-100 dark:bg-slate-700"> <span class="select-none">Fiz a atividade do dia</span></label>
+                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" disabled id="check-water" class="w-5 h-5 rounded text-brand-500 bg-gray-100 dark:bg-slate-700"> <span class="select-none">Bebi 3L de água</span></label>
+                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="summary-cb w-5 h-5 rounded text-brand-500 bg-white dark:bg-slate-700" onchange="updateSummaryCounter()"> <span class="select-none">Comi a cada ~3h sem saltar refeições</span></label>
+                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="summary-cb w-5 h-5 rounded text-brand-500 bg-white dark:bg-slate-700" onchange="updateSummaryCounter()"> <span class="select-none">Dormi pelo menos 7h</span></label>
+                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="summary-cb w-5 h-5 rounded text-brand-500 bg-white dark:bg-slate-700" onchange="updateSummaryCounter()"> <span class="select-none">Zero álcool hoje</span></label>
+                </div>
+                <p id="summary-msg" class="mt-4 text-center text-sm font-bold text-brand-500 hidden fade-in">Excelente trabalho! Mais um dia perfeito para a estreia. 🎭</p>
+            </div>
+        </section>
+
+        <!-- DIET VIEW -->
+        <section data-view="diet" class="fade-in space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                <h2 class="font-bold text-2xl">Plano Alimentar</h2>
+                <select id="diet-day-select" class="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 p-2" onchange="renderDietDay(this.value)">
+                    <!-- Options generated via JS -->
+                </select>
+            </div>
+
+            <!-- Regras banner -->
+            <div class="bg-slate-800 text-white p-4 rounded-xl shadow-sm text-sm">
+                <p class="font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-yellow-400"></i> Regras de Ouro</p>
+                <ul class="list-disc pl-5 space-y-1 text-slate-300">
+                    <li>Ovos: NUNCA cozidos (usar mexidos, omelete, escalfados, estrelados).</li>
+                    <li>Sem carne vermelha, leite, iogurte ou bebidas vegetais.</li>
+                    <li>Pequeno-almoço sempre com café sem açúcar.</li>
+                    <li>Comer a cada ~3h (Hipoglicemia reativa).</li>
+                </ul>
+            </div>
+
+            <div id="diet-content" class="space-y-4">
+                <!-- Diet content injected here -->
+            </div>
+        </section>
+
+        <!-- WORKOUT VIEW -->
+        <section data-view="workout" class="fade-in space-y-6">
+            <h2 class="font-bold text-2xl mb-4">Plano de Treino</h2>
+
+            <div class="bg-white dark:bg-darkcard p-5 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 mb-6">
+                <h3 class="font-bold text-lg mb-3 border-b border-gray-100 dark:border-slate-700 pb-2">Estrutura Semanal</h3>
+                <ul class="text-sm space-y-2">
+                    <li><span class="font-bold text-brand-600 dark:text-brand-400 w-20 inline-block">Seg/Qua/Sex:</span> Treino de Força / Calistenia</li>
+                    <li><span class="font-bold text-blue-500 w-20 inline-block">Ter/Qui:</span> Cardio Zona 2 (40 min)</li>
+                    <li><span class="font-bold text-gray-500 w-20 inline-block">Sáb/Dom:</span> Descanso ativo ou caminhada</li>
+                </ul>
+            </div>
+
+            <div class="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 p-4 rounded-xl mb-6">
+                <h3 class="font-bold text-amber-800 dark:text-amber-400 flex items-center gap-2 mb-2"><i class="fa-solid fa-person-walking-arrow-right"></i> Rotina de Mobilidade (Dias de Ensaio)</h3>
+                <p class="text-xs text-amber-700 dark:text-amber-300 mb-3">Fazer 25 min antes de ensaios pesados:</p>
+                <ul class="text-sm text-amber-800 dark:text-amber-200 space-y-1 list-disc pl-5">
+                    <li>Rotação de ombros — 30s frente/trás</li>
+                    <li>Abertura torácica 4 apoios — 8 rep/lado</li>
+                    <li>Hip flexor estático — 45s/lado</li>
+                    <li>Ponte glútea — 3x15</li>
+                    <li>Gato-vaca — 10 ciclos</li>
+                    <li>Respiração diafragmática — 2 min</li>
+                </ul>
+            </div>
+
+            <div class="flex justify-between items-center mt-8 mb-4">
+                <h3 class="font-bold text-xl">Treinos de Força</h3>
+                <select id="workout-week-select" class="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-sm rounded-lg p-2" onchange="renderWorkoutWeek(this.value)">
+                    <option value="1">Semana 1 (2-8 Mai)</option>
+                    <option value="2">Semana 2 (9-15 Mai)</option>
+                    <option value="3">Semana 3 (16-22 Mai)</option>
+                    <option value="4">Semana 4 (23-29 Mai)</option>
+                    <option value="5">Semana 5 (30 Mai-6 Jun)</option>
+                </select>
+            </div>
+
+            <div id="workout-content" class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
+                <!-- Workout content injected here -->
+            </div>
+        </section>
+
+        <!-- SHOPPING VIEW -->
+        <section data-view="shopping" class="fade-in space-y-6">
+            <h2 class="font-bold text-2xl mb-4">Lista de Compras <span class="text-sm font-normal text-gray-500 ml-2">Orçamento ~85€/mês</span></h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Mensal -->
+                <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
+                    <div class="bg-slate-100 dark:bg-slate-800 p-3 font-bold text-sm border-b border-gray-200 dark:border-slate-700 flex justify-between">
+                        <span>Mensal (Base)</span>
+                        <span class="text-brand-600 dark:text-brand-400">~28,86€</span>
+                    </div>
+                    <ul class="p-4 space-y-3 text-sm">
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Azeite virgem extra 1L</span> <span>5,85€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Aveia 1kg</span> <span>3,00€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Arroz branco 2kg</span> <span>2,66€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Lentilhas secas 1kg</span> <span>2,14€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Atum natural lata 6x60g</span> <span>4,42€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Sardinha lata x4</span> <span>3,96€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Chocolate negro 75% x2</span> <span>2,38€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Feijão preto lata x3</span> <span>2,67€</span></li>
+                        <li class="flex justify-between"><span>Grão-de-bico lata x2</span> <span>1,78€</span></li>
+                    </ul>
+                </div>
+
+                <!-- Semanal -->
+                <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
+                    <div class="bg-slate-100 dark:bg-slate-800 p-3 font-bold text-sm border-b border-gray-200 dark:border-slate-700 flex justify-between">
+                        <span>Semanal (Frescos/Proteína)</span>
+                        <span class="text-brand-600 dark:text-brand-400">~12,54€/sem</span>
+                    </div>
+                    <ul class="p-4 space-y-3 text-sm">
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1 font-bold text-amber-600 dark:text-amber-400"><span>Ovos 12 un (Base prot.)</span> <span>1,29€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Peito de frango 250g (Max 2x)</span> <span>2,34€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Banana 1kg</span> <span>1,20€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Maçã 1kg</span> <span>1,50€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Cenoura 1kg</span> <span>0,99€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Tomate 500g</span> <span>1,29€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Curgete/abobrinha x1</span> <span>0,69€</span></li>
+                        <li class="flex justify-between border-b border-dashed border-gray-200 dark:border-slate-700 pb-1"><span>Espinafre 300g</span> <span>1,49€</span></li>
+                        <li class="flex justify-between"><span>Batata branca 2kg</span> <span>1,75€</span></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl text-sm border border-blue-100 dark:border-blue-800">
+                <p class="font-bold text-blue-800 dark:text-blue-300 mb-1"><i class="fa-solid fa-calculator"></i> Total Estimado</p>
+                <p class="text-blue-700 dark:text-blue-200">28,86€ (Mensal) + (12,54€ x 4.3 semanas) ≈ <strong>82,78€ por mês</strong>. Dentro do orçamento de 90€! ✅</p>
+            </div>
+        </section>
+        
     </main>
 
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 w-full bg-white dark:bg-dark-800 border-t border-slate-200 dark:border-dark-700 z-50 pb-safe">
-        <div class="max-w-md mx-auto flex justify-around">
-            <button onclick="switchTab('dashboard')" class="nav-btn flex flex-col items-center py-3 px-4 text-slate-400 hover:text-brand-500 transition-colors" data-tab="dashboard">
-                <i data-lucide="layout-dashboard" class="w-6 h-6 mb-1"></i>
-                <span class="text-[10px] font-semibold uppercase tracking-wider">Hoje</span>
-            </button>
-            <button onclick="switchTab('diet')" class="nav-btn flex flex-col items-center py-3 px-4 text-slate-400 hover:text-brand-500 transition-colors" data-tab="diet">
-                <i data-lucide="utensils" class="w-6 h-6 mb-1"></i>
-                <span class="text-[10px] font-semibold uppercase tracking-wider">Dieta</span>
-            </button>
-            <button onclick="switchTab('workout')" class="nav-btn flex flex-col items-center py-3 px-4 text-slate-400 hover:text-brand-500 transition-colors" data-tab="workout">
-                <i data-lucide="dumbbell" class="w-6 h-6 mb-1"></i>
-                <span class="text-[10px] font-semibold uppercase tracking-wider">Treino</span>
-            </button>
-            <button onclick="switchTab('shopping')" class="nav-btn flex flex-col items-center py-3 px-4 text-slate-400 hover:text-brand-500 transition-colors" data-tab="shopping">
-                <i data-lucide="shopping-cart" class="w-6 h-6 mb-1"></i>
-                <span class="text-[10px] font-semibold uppercase tracking-wider">Compras</span>
-            </button>
+    <!-- Bottom Navigation (Mobile) & Floating Nav (Desktop) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-darkcard border-t border-gray-200 dark:border-slate-700 pb-safe z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+        <div class="max-w-4xl mx-auto px-2">
+            <ul class="flex justify-between items-center text-xs">
+                <li class="flex-1">
+                    <button onclick="switchTab('dashboard')" class="nav-btn w-full py-3 flex flex-col items-center gap-1 text-brand-600 dark:text-brand-400 active-nav" data-target="dashboard">
+                        <i class="fa-solid fa-house text-lg"></i>
+                        <span>Início</span>
+                    </button>
+                </li>
+                <li class="flex-1">
+                    <button onclick="switchTab('tracking')" class="nav-btn w-full py-3 flex flex-col items-center gap-1 text-gray-400 hover:text-slate-600 dark:hover:text-slate-300" data-target="tracking">
+                        <i class="fa-solid fa-circle-check text-lg"></i>
+                        <span>Tracking</span>
+                    </button>
+                </li>
+                <li class="flex-1">
+                    <button onclick="switchTab('diet')" class="nav-btn w-full py-3 flex flex-col items-center gap-1 text-gray-400 hover:text-slate-600 dark:hover:text-slate-300" data-target="diet">
+                        <i class="fa-solid fa-utensils text-lg"></i>
+                        <span>Dieta</span>
+                    </button>
+                </li>
+                <li class="flex-1">
+                    <button onclick="switchTab('workout')" class="nav-btn w-full py-3 flex flex-col items-center gap-1 text-gray-400 hover:text-slate-600 dark:hover:text-slate-300" data-target="workout">
+                        <i class="fa-solid fa-dumbbell text-lg"></i>
+                        <span>Treino</span>
+                    </button>
+                </li>
+                <li class="flex-1">
+                    <button onclick="switchTab('shopping')" class="nav-btn w-full py-3 flex flex-col items-center gap-1 text-gray-400 hover:text-slate-600 dark:hover:text-slate-300" data-target="shopping">
+                        <i class="fa-solid fa-cart-shopping text-lg"></i>
+                        <span>Compras</span>
+                    </button>
+                </li>
+            </ul>
         </div>
     </nav>
 
     <script>
-        // --- DATA STRUCTURE & LOGIC ---
-        const startDate = new Date('2026-05-02T00:00:00');
-        const endDate = new Date('2026-06-06T00:00:00');
+        // --- DATA & STATE ---
+        const protocolStart = new Date(2026, 4, 2); // May 2, 2026 (Month is 0-indexed)
+        const protocolEnd = new Date(2026, 5, 6);   // June 6, 2026
         
-        const weekGoals = [
-            { w: 1, kcal: 2120, prot: 140, steps: 8000, desc: "Adaptação" },
-            { w: 2, kcal: 2067, prot: 145, steps: 10000, desc: "Aumento de volume" },
-            { w: 3, kcal: 1988, prot: 148, steps: 12000, desc: "Défice apertado" },
-            { w: 4, kcal: 1935, prot: 150, steps: 13000, desc: "Pico de restrição" },
-            { w: 5, kcal: 2120, prot: 148, steps: 10000, desc: "Semana de Estreia (Deload)" }
+        let state = {
+            currentDay: 1, // 1 to 35
+            actualDate: new Date(),
+            waterGlasses: 0,
+            activityDone: false,
+            timer: { timeLeft: 40 * 60, isRunning: false, interval: null }
+        };
+
+        // --- WEEKLY GOALS ---
+        const weeklyGoals = {
+            1: { cal: 2120, pro: 140, steps: 8000 },
+            2: { cal: 2067, pro: 145, steps: 10000 },
+            3: { cal: 1988, pro: 148, steps: 12000 },
+            4: { cal: 1935, pro: 150, steps: 13000 },
+            5: { cal: 2120, pro: 148, steps: 10000 }
+        };
+
+        // --- DIET TEMPLATES (Week 1 Base) ---
+        const baseDiet = [
+            { // Dia 1 - Seg (Força)
+                type: 'Força',
+                meals: [
+                    { time: '06:30', name: 'Pré-treino', content: 'Maçã 1 un média (150g)' },
+                    { time: '07:30', name: 'Pequeno-almoço', content: 'Café sem açúcar 1 chávena (200ml) | Aveia em flocos 60g | Ovos mexidos 2 un (120g) | Banana 1 un pequena (80g)' },
+                    { time: '10:30', name: 'Lanche', content: 'Sardinha em azeite 1 lata (90g) | Arroz branco cozido 100g' },
+                    { time: '13:30', name: 'Almoço airfryer', content: 'Peito de frango 125g | Batata branca assada 200g | Espinafre refogado 100g | Azeite 1 col. sopa (10g)', isAirfryer: true },
+                    { time: '16:30', name: 'Lanche', content: 'Omelete 1 ovo (60g) | Tomate 100g | Maçã 1 un pequena (120g)' },
+                    { time: '19:30', name: 'Jantar', content: 'Lentilhas cozidas 200g | Ovos mexidos 2 un (120g) | Cenoura cozida 100g | Azeite 1 col. sopa (10g)' }
+                ]
+            },
+            { // Dia 2 - Ter (Cardio)
+                type: 'Cardio Z2',
+                meals: [
+                    { time: '07:30', name: 'Pequeno-almoço', content: 'Café sem açúcar 1 chávena (200ml) | Aveia em flocos 70g | Omelete 2 ovos (120g) | Banana 1 un média (100g)' },
+                    { time: '10:30', name: 'Lanche', content: 'Atum em lata 1 lata (60g) | Arroz branco cozido 100g | Tomate 1 un (100g)' },
+                    { time: '13:30', name: 'Almoço airfryer', content: 'Peito de frango 125g | Batata branca assada 200g | Cenoura cozida 100g | Azeite 1 col. sopa (10g)', isAirfryer: true },
+                    { time: '16:30', name: 'Lanche', content: 'Ovos mexidos 2 un (120g) | Maçã 1 un (150g)' },
+                    { time: '19:30', name: 'Jantar', content: 'Feijão preto cozido 200g | Ovos escalfados 2 un (120g) | Curgete refogada 150g | Azeite 1 col. sopa (10g)' }
+                ]
+            },
+            { // Dia 3 - Qua (Força)
+                type: 'Força',
+                meals: [
+                    { time: '06:30', name: 'Pré-treino', content: 'Banana 1 un pequena (80g)' },
+                    { time: '07:30', name: 'Pequeno-almoço', content: 'Café sem açúcar 1 chávena (200ml) | Aveia em flocos 60g | Omelete com espinafre 2 ovos + 40g espinafre | Maçã 1 un (120g)' },
+                    { time: '10:30', name: 'Lanche', content: 'Atum em lata 1 lata (60g) | Arroz branco cozido 100g | Cenoura crua 100g' },
+                    { time: '13:30', name: 'Almoço airfryer', content: 'Omelete grande 3 ovos (180g) | Batata branca assada 200g | Tomate + espinafre 150g | Azeite 1 col. sopa (10g)', isAirfryer: true },
+                    { time: '16:30', name: 'Lanche', content: 'Sardinha em azeite 1 lata (90g) | Maçã 1 un (120g)' },
+                    { time: '19:30', name: 'Jantar', content: 'Grão-de-bico cozido 200g | Ovos estrelados 2 un (120g) | Curgete refogada 150g | Azeite 1 col. sopa (10g)' }
+                ]
+            },
+            { // Dia 4 - Qui (Cardio)
+                type: 'Cardio Z2',
+                meals: [
+                    { time: '07:30', name: 'Pequeno-almoço', content: 'Café sem açúcar 1 chávena (200ml) | Aveia em flocos 70g | Omelete com tomate 2 ovos + 80g tomate | Banana 1 un pequena (80g)' },
+                    { time: '10:30', name: 'Lanche', content: 'Lentilhas cozidas 150g | Atum em lata 1 lata (60g)' },
+                    { time: '13:30', name: 'Almoço airfryer', content: 'Batata branca assada 200g | Ovos mexidos 2 un (120g) | Espinafre + cenoura 150g | Azeite 1 col. sopa (10g)', isAirfryer: true },
+                    { time: '16:30', name: 'Lanche', content: 'Ovos mexidos 1 un (60g) | Maçã 1 un (150g)' },
+                    { time: '19:30', name: 'Jantar', content: 'Feijão preto cozido 180g | Ovos escalfados 2 un (120g) | Tomate + curgete 150g | Azeite 1 col. sopa (10g)' }
+                ]
+            },
+            { // Dia 5 - Sex (Força)
+                type: 'Força',
+                meals: [
+                    { time: '06:30', name: 'Pré-treino', content: 'Maçã 1 un (150g)' },
+                    { time: '07:30', name: 'Pequeno-almoço', content: 'Café sem açúcar 1 chávena (200ml) | Aveia em flocos 60g | Ovos mexidos 2 un (120g) | Banana 1 un (100g)' },
+                    { time: '10:30', name: 'Lanche', content: 'Sardinha em azeite 1 lata (90g) | Arroz branco cozido 100g' },
+                    { time: '13:30', name: 'Almoço airfryer', content: 'Omelete grande 3 ovos (180g) | Batata branca assada 200g | Cenoura + espinafre 150g | Azeite 1 col. sopa (10g)', isAirfryer: true },
+                    { time: '16:30', name: 'Lanche', content: 'Atum em lata 1 lata (60g) | Maçã 1 un (120g)' },
+                    { time: '19:30', name: 'Jantar', content: 'Lentilhas cozidas 200g | Ovos estrelados 2 un (120g) | Tomate + curgete 150g | Azeite 1 col. sopa (10g) | Chocolate negro 75% (20g)' }
+                ]
+            },
+            { // Dia 6 - Sáb (Descanso)
+                type: 'Descanso',
+                meals: [
+                    { time: '07:30', name: 'Pequeno-almoço', content: 'Café sem açúcar 1 chávena (200ml) | Aveia em flocos 65g | Omelete com tomate 2 ovos + 80g tomate | Banana 1 un (100g)' },
+                    { time: '10:30', name: 'Lanche', content: 'Grão-de-bico cozido 150g | Cenoura crua 100g' },
+                    { time: '13:30', name: 'Almoço airfryer', content: 'Batata branca assada 250g | Ovos mexidos 2 un (120g) | Espinafre refogado 100g | Azeite 1 col. sopa (10g)', isAirfryer: true },
+                    { time: '16:30', name: 'Lanche', content: 'Maçã 1 un (150g) | Atum em lata 1 lata (60g)' },
+                    { time: '19:30', name: 'Jantar', content: 'Feijão preto cozido 200g | Ovos escalfados 2 un (120g) | Tomate + curgete 150g | Azeite 1 col. sopa (10g)' }
+                ]
+            },
+            { // Dia 7 - Dom (Descanso)
+                type: 'Descanso',
+                meals: [
+                    { time: '07:30', name: 'Pequeno-almoço', content: 'Café sem açúcar 1 chávena (200ml) | Aveia em flocos 65g | Omelete com cenoura 2 ovos + 50g cenoura | Banana 1 un (100g)' },
+                    { time: '10:30', name: 'Lanche', content: 'Sardinha em azeite 1 lata (90g) | Arroz branco cozido 100g' },
+                    { time: '13:30', name: 'Almoço airfryer', content: 'Batata doce assada 200g | Ovos mexidos 3 un (180g) | Espinafre + tomate 150g | Azeite 1 col. sopa (10g)', isAirfryer: true },
+                    { time: '16:30', name: 'Lanche', content: 'Lentilhas cozidas 150g | Maçã 1 un (120g)' },
+                    { time: '19:30', name: 'Jantar', content: 'Grão-de-bico cozido 200g | Ovos estrelados 2 un (120g) | Cenoura + curgete refogada 150g | Azeite 1 col. sopa (10g) | Chocolate negro 75% (20g)' }
+                ]
+            }
         ];
 
-        // Base Diet Template (Week 1)
-        const baseDiet = {
-            1: [ // Segunda
-                { time: "06:30", name: "Pré-treino", items: [{n: "Maçã média", q: "1 un (150g)"}] },
-                { time: "07:30", name: "Pequeno-almoço", items: [{n: "Café sem açúcar", q: "1 chávena"}, {n: "Aveia em flocos", q: "60g"}, {n: "Ovos mexidos", q: "2 un (120g)"}, {n: "Banana pequena", q: "1 un (80g)"}] },
-                { time: "10:30", name: "Lanche", fish: true, items: [{n: "Sardinha em azeite", q: "1 lata (90g)"}, {n: "Arroz branco cozido", q: "100g"}] },
-                { time: "13:30", name: "Almoço", airfryer: true, items: [{n: "Peito de frango", q: "125g"}, {n: "Batata assada", q: "200g"}, {n: "Espinafre refogado", q: "100g"}, {n: "Azeite", q: "1 col. sopa (10g)"}] },
-                { time: "16:30", name: "Lanche", items: [{n: "Omelete", q: "1 ovo (60g)"}, {n: "Tomate", q: "100g"}, {n: "Maçã pequena", q: "1 un (120g)"}] },
-                { time: "19:30", name: "Jantar", items: [{n: "Lentilhas cozidas", q: "200g"}, {n: "Ovos mexidos", q: "2 un (120g)"}, {n: "Cenoura cozida", q: "100g"}, {n: "Azeite", q: "1 col. sopa (10g)"}] }
+        // Generator for 35 days (clones base diet and tweaks portions slightly based on week)
+        const fullDietPlan = [];
+        for (let day = 1; day <= 35; day++) {
+            const week = Math.ceil(day / 7);
+            const dayOfWeekIndex = (day - 1) % 7;
+            const baseDay = JSON.parse(JSON.stringify(baseDiet[dayOfWeekIndex])); // Deep copy
+            
+            // Generate Date text
+            let d = new Date(protocolStart);
+            d.setDate(d.getDate() + (day - 1));
+            const dateStr = d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' });
+
+            // Apply slight modifications for weeks 2, 3, 4 (calorie deficit)
+            let note = "";
+            if (week === 2) note = "Ajuste S2: Reduzido arroz/batata em ~15% para atingir 2067 kcal.";
+            if (week === 3) note = "Ajuste S3: Reduzido aveia e arroz em ~20% para atingir 1988 kcal.";
+            if (week === 4) note = "Ajuste S4: Corte máximo de carbs (pico definição) para atingir 1935 kcal.";
+            if (week === 5) note = "Ajuste S5: Volume reduzido no treino. Calorias voltam à baseline (2120 kcal).";
+
+            fullDietPlan.push({
+                dayNum: day,
+                dateStr: dateStr,
+                week: week,
+                type: baseDay.type,
+                meals: baseDay.meals,
+                note: note
+            });
+        }
+
+        // --- WORKOUT DATA ---
+        const workouts = {
+            1: [
+                "Agachamento com pausa: 3×12–15, descanso 60s",
+                "Flexão normal: 3×8–12, descanso 60s",
+                "Afundo alternado: 3×10 cada perna, descanso 60s",
+                "Remada invertida em mesa: 3×8–12, descanso 60s",
+                "Prancha frontal: 3×30–40s, descanso 45s",
+                "Mountain climbers: 3×20 total, descanso 45s"
             ],
-            2: [ // Terça
-                { time: "07:30", name: "Pequeno-almoço", items: [{n: "Café sem açúcar", q: "1 chávena"}, {n: "Aveia em flocos", q: "70g"}, {n: "Omelete", q: "2 ovos (120g)"}, {n: "Banana média", q: "1 un (100g)"}] },
-                { time: "10:30", name: "Lanche", fish: true, items: [{n: "Atum em lata", q: "1 lata (60g)"}, {n: "Arroz branco cozido", q: "100g"}, {n: "Tomate", q: "1 un (100g)"}] },
-                { time: "13:30", name: "Almoço", airfryer: true, items: [{n: "Peito de frango", q: "125g"}, {n: "Batata assada", q: "200g"}, {n: "Cenoura cozida", q: "100g"}, {n: "Azeite", q: "1 col. sopa"}] },
-                { time: "16:30", name: "Lanche", items: [{n: "Ovos mexidos", q: "2 un (120g)"}, {n: "Maçã", q: "1 un (150g)"}] },
-                { time: "19:30", name: "Jantar", items: [{n: "Feijão preto cozido", q: "200g"}, {n: "Ovos escalfados", q: "2 un (120g)"}, {n: "Curgete refogada", q: "150g"}, {n: "Azeite", q: "1 col. sopa"}] }
+            2: [
+                "Agachamento búlgaro: 3×8–10 cada perna, descanso 75s",
+                "Flexão com pausa: 3×8–10, descanso 60s",
+                "Afundo dinâmico: 3×12 cada perna, descanso 60s",
+                "Remada invertida pernas dobradas: 3×10–12, descanso 60s",
+                "Prancha lateral: 3×30s cada lado, descanso 45s",
+                "Burpee simplificado: 3×8–10, descanso 60s"
             ],
-            3: [ // Quarta
-                { time: "06:30", name: "Pré-treino", items: [{n: "Banana pequena", q: "1 un (80g)"}] },
-                { time: "07:30", name: "Pequeno-almoço", items: [{n: "Café sem açúcar", q: "1 chávena"}, {n: "Aveia em flocos", q: "60g"}, {n: "Omelete com espinafre", q: "2 ovos + 40g"}, {n: "Maçã", q: "1 un (120g)"}] },
-                { time: "10:30", name: "Lanche", fish: true, items: [{n: "Atum em lata", q: "1 lata (60g)"}, {n: "Arroz branco cozido", q: "100g"}, {n: "Cenoura crua", q: "100g"}] },
-                { time: "13:30", name: "Almoço", airfryer: true, items: [{n: "Omelete grande", q: "3 ovos (180g)"}, {n: "Batata assada", q: "200g"}, {n: "Tomate + espinafre", q: "150g"}, {n: "Azeite", q: "1 col. sopa"}] },
-                { time: "16:30", name: "Lanche", fish: true, items: [{n: "Sardinha em azeite", q: "1 lata (90g)"}, {n: "Maçã", q: "1 un (120g)"}] },
-                { time: "19:30", name: "Jantar", items: [{n: "Grão-de-bico cozido", q: "200g"}, {n: "Ovos estrelados", q: "2 un (120g)"}, {n: "Curgete refogada", q: "150g"}, {n: "Azeite", q: "1 col. sopa"}] }
+            3: [
+                "Agachamento jump: 4×10, descanso 75s",
+                "Flexão com pés elevados: 3×8–10, descanso 60s",
+                "Pistol squat assistido: 3×6 cada perna, descanso 90s",
+                "Superman: 3×12, descanso 45s",
+                "Prancha dinâmica c/ toque ombros: 3×16 total, descanso 45s",
+                "Tricep dip em cadeira: 3×12–15, descanso 60s"
             ],
-            4: [ // Quinta
-                { time: "07:30", name: "Pequeno-almoço", items: [{n: "Café sem açúcar", q: "1 chávena"}, {n: "Aveia em flocos", q: "70g"}, {n: "Omelete", q: "2 ovos + tomate 80g"}, {n: "Banana pequena", q: "1 un (80g)"}] },
-                { time: "10:30", name: "Lanche", fish: true, items: [{n: "Lentilhas cozidas", q: "150g"}, {n: "Atum em lata", q: "1 lata (60g)"}] },
-                { time: "13:30", name: "Almoço", airfryer: true, items: [{n: "Batata assada", q: "200g"}, {n: "Ovos mexidos", q: "2 un (120g)"}, {n: "Espinafre + cenoura", q: "150g"}, {n: "Azeite", q: "1 col. sopa"}] },
-                { time: "16:30", name: "Lanche", items: [{n: "Ovos mexidos", q: "1 un (60g)"}, {n: "Maçã", q: "1 un (150g)"}] },
-                { time: "19:30", name: "Jantar", items: [{n: "Feijão preto cozido", q: "180g"}, {n: "Ovos escalfados", q: "2 un (120g)"}, {n: "Tomate + curgete", q: "150g"}, {n: "Azeite", q: "1 col. sopa"}] }
+            4: [
+                "<span class='text-brand-600 font-bold'>Formato Circuito (45s trab / 15s pausa / 3 voltas)</span>",
+                "<b>Circuito A:</b> Agachamento jump, Flexão normal, Mountain climbers, Afundo alternado, Prancha c/ toque ombros",
+                "<b>Descanso:</b> 90s entre circuitos",
+                "<b>Circuito B:</b> Superman, Tricep dip, Prancha lateral Esq, Prancha lateral Dir, Burpee simplificado"
             ],
-            5: [ // Sexta
-                { time: "06:30", name: "Pré-treino", items: [{n: "Maçã", q: "1 un (150g)"}] },
-                { time: "07:30", name: "Pequeno-almoço", items: [{n: "Café sem açúcar", q: "1 chávena"}, {n: "Aveia em flocos", q: "60g"}, {n: "Ovos mexidos", q: "2 un (120g)"}, {n: "Banana", q: "1 un (100g)"}] },
-                { time: "10:30", name: "Lanche", fish: true, items: [{n: "Sardinha em azeite", q: "1 lata (90g)"}, {n: "Arroz branco cozido", q: "100g"}] },
-                { time: "13:30", name: "Almoço", airfryer: true, items: [{n: "Omelete grande", q: "3 ovos (180g)"}, {n: "Batata assada", q: "200g"}, {n: "Cenoura + espinafre", q: "150g"}, {n: "Azeite", q: "1 col. sopa"}] },
-                { time: "16:30", name: "Lanche", fish: true, items: [{n: "Atum em lata", q: "1 lata (60g)"}, {n: "Maçã", q: "1 un (120g)"}] },
-                { time: "19:30", name: "Jantar", choc: true, items: [{n: "Lentilhas cozidas", q: "200g"}, {n: "Ovos estrelados", q: "2 un (120g)"}, {n: "Tomate + curgete", q: "150g"}, {n: "Azeite", q: "1 col. sopa"}, {n: "Chocolate negro 75%", q: "2 quadrados (20g)"}] }
-            ],
-            6: [ // Sabado
-                { time: "07:30", name: "Pequeno-almoço", items: [{n: "Café sem açúcar", q: "1 chávena"}, {n: "Aveia em flocos", q: "65g"}, {n: "Omelete com tomate", q: "2 ovos + 80g"}, {n: "Banana", q: "1 un (100g)"}] },
-                { time: "10:30", name: "Lanche", items: [{n: "Grão-de-bico cozido", q: "150g"}, {n: "Cenoura crua", q: "100g"}] },
-                { time: "13:30", name: "Almoço", airfryer: true, items: [{n: "Batata assada", q: "250g"}, {n: "Ovos mexidos", q: "2 un (120g)"}, {n: "Espinafre refogado", q: "100g"}, {n: "Azeite", q: "1 col. sopa"}] },
-                { time: "16:30", name: "Lanche", fish: true, items: [{n: "Maçã", q: "1 un (150g)"}, {n: "Atum em lata", q: "1 lata (60g)"}] },
-                { time: "19:30", name: "Jantar", items: [{n: "Feijão preto cozido", q: "200g"}, {n: "Ovos escalfados", q: "2 un (120g)"}, {n: "Tomate + curgete", q: "150g"}, {n: "Azeite", q: "1 col. sopa"}] }
-            ],
-            0: [ // Domingo (0 in getDay())
-                { time: "07:30", name: "Pequeno-almoço", items: [{n: "Café sem açúcar", q: "1 chávena"}, {n: "Aveia em flocos", q: "65g"}, {n: "Omelete com cenoura", q: "2 ovos + 50g"}, {n: "Banana", q: "1 un (100g)"}] },
-                { time: "10:30", name: "Lanche", fish: true, items: [{n: "Sardinha em azeite", q: "1 lata (90g)"}, {n: "Arroz branco cozido", q: "100g"}] },
-                { time: "13:30", name: "Almoço", airfryer: true, items: [{n: "Batata doce assada", q: "200g"}, {n: "Ovos mexidos", q: "3 un (180g)"}, {n: "Espinafre + tomate", q: "150g"}, {n: "Azeite", q: "1 col. sopa"}] },
-                { time: "16:30", name: "Lanche", items: [{n: "Lentilhas cozidas", q: "150g"}, {n: "Maçã", q: "1 un (120g)"}] },
-                { time: "19:30", name: "Jantar", choc: true, items: [{n: "Grão-de-bico cozido", q: "200g"}, {n: "Ovos estrelados", q: "2 un (120g)"}, {n: "Cenoura + curgete", q: "150g"}, {n: "Azeite", q: "1 col. sopa"}, {n: "Chocolate negro 75%", q: "2 quadrados (20g)"}] }
+            5: [
+                "<span class='text-brand-600 font-bold'>Volume Reduzido 30% (Semana da Estreia)</span>",
+                "Agachamento normal: 3×12",
+                "Flexão normal: 3×10",
+                "Prancha frontal: 3×45s",
+                "Remada invertida: 3×10"
             ]
         };
 
-        const workouts = {
-            1: { type: "Força", exercises: ["Agachamento com pausa: 3×12–15 (60s rest)", "Flexão normal: 3×8–12 (60s rest)", "Afundo alternado: 3×10/perna (60s rest)", "Remada invertida em mesa: 3×8–12 (60s rest)", "Prancha frontal: 3×30–40s (45s rest)", "Mountain climbers: 3×20 total (45s rest)"] },
-            2: { type: "Cardio", exercises: ["Cardio Zona 2: 40 minutos", "Opções: Caminhada rápida, escadas, bicicleta", "Intensidade: Conseguir falar frases completas"] },
-            3: { type: "Força", exercises: ["Agachamento com pausa: 3×12–15 (60s rest)", "Flexão normal: 3×8–12 (60s rest)", "Afundo alternado: 3×10/perna (60s rest)", "Remada invertida em mesa: 3×8–12 (60s rest)", "Prancha frontal: 3×30–40s (45s rest)", "Mountain climbers: 3×20 total (45s rest)"] },
-            4: { type: "Cardio", exercises: ["Cardio Zona 2: 40 minutos", "Opções: Caminhada rápida, escadas, bicicleta", "Intensidade: Conseguir falar frases completas"] },
-            5: { type: "Força", exercises: ["Agachamento com pausa: 3×12–15 (60s rest)", "Flexão normal: 3×8–12 (60s rest)", "Afundo alternado: 3×10/perna (60s rest)", "Remada invertida em mesa: 3×8–12 (60s rest)", "Prancha frontal: 3×30–40s (45s rest)", "Mountain climbers: 3×20 total (45s rest)"] },
-            6: { type: "Descanso", exercises: ["Descanso ativo", "Caminhada leve ou alongamentos"] },
-            0: { type: "Descanso", exercises: ["Descanso total ou Caminhada leve"] }
-        };
-        
-        // Progression variations for weeks 2-5
-        const w2Workouts = { 1: ["Agachamento búlgaro: 3×8-10/perna (75s)", "Flexão com pausa: 3×8-10 (60s)", "Afundo dinâmico: 3×12/perna (60s)", "Remada invertida pernas dobradas: 3×10-12 (60s)", "Prancha lateral: 3×30s/lado (45s)", "Burpee simplificado: 3×8-10 (60s)"] };
-        const w3Workouts = { 1: ["Agachamento jump: 4×10 (75s)", "Flexão pés elevados: 3×8-10 (60s)", "Pistol squat assistido: 3×6/perna (90s)", "Superman: 3×12 (45s)", "Prancha dinâmica ombros: 3×16 total (45s)", "Tricep dip cadeira: 3×12-15 (60s)"] };
-        const w4Workouts = { 1: ["CIRCUITO A (45s ON / 15s OFF / 3 Voltas):", "Agachamento jump, Flexão, Mountain climbers, Afundo, Prancha ombros", "Descanso 90s", "CIRCUITO B (45s ON / 15s OFF / 3 Voltas):", "Superman, Tricep dip, Prancha lat. esq, Prancha lat. dir, Burpee"] };
-        const w5Workouts = { 1: ["VOLUME REDUZIDO 30% (Semana de Estreia)", "Agachamento normal: 3×12", "Flexão normal: 3×10", "Prancha frontal: 3×45s", "Remada invertida: 3×10"] };
-
-
-        // --- STATE ---
-        let currentTab = 'dashboard';
-        let isRehearsalDay = false;
-        let selectedWeek = 1;
-        let selectedDay = new Date().getDay() || 7; // 1=Mon, 7=Sun internally for UI
-        let dietFilter = 'all';
-
-        // Initialize App
+        // --- INITIALIZATION ---
         function init() {
+            calculateCurrentDay();
             setupTheme();
-            calculateCurrentWeek();
-            switchTab('dashboard');
+            renderWaterGrid();
+            populateDietSelect();
+            updateDashboard();
+            renderDietDay(state.currentDay);
+            renderWorkoutWeek(Math.ceil(state.currentDay / 7) || 1);
+            
+            // Set correct selects
+            document.getElementById('diet-day-select').value = state.currentDay;
+            document.getElementById('workout-week-select').value = Math.ceil(state.currentDay / 7) || 1;
+
+            // Timer update loop
+            setInterval(updateTimerDisplay, 1000);
         }
 
-        function calculateCurrentWeek() {
+        function calculateCurrentDay() {
             const today = new Date();
-            // Force May 2, 2026 for demonstration if today is before
-            const refDate = today < startDate ? startDate : today;
-            const diffTime = Math.abs(refDate - startDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-            selectedWeek = Math.min(Math.ceil(diffDays / 7) || 1, 5);
+            today.setHours(0,0,0,0);
             
-            let jsDay = refDate.getDay();
-            selectedDay = jsDay; // 0=Sun, 1=Mon...
-        }
-
-        // --- RENDER FUNCTIONS ---
-
-        function getDayName(dayIndex) {
-            const days = {1: "Segunda", 2: "Terça", 3: "Quarta", 4: "Quinta", 5: "Sexta", 6: "Sábado", 0: "Domingo"};
-            return days[dayIndex];
-        }
-
-        function renderDashboard() {
-            const goal = weekGoals[selectedWeek - 1];
-            const daysPassed = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
-            const progress = Math.max(0, Math.min(100, (daysPassed / 35) * 100));
-            const todayWorkout = workouts[selectedDay];
-
-            const html = `
-                <div class="mb-6 flex justify-between items-end">
-                    <div>
-                        <p class="text-sm text-slate-500 dark:text-slate-400">Semana ${selectedWeek} de 5</p>
-                        <h2 class="text-2xl font-bold">Resumo Diário</h2>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-xs text-slate-500">Faltam</p>
-                        <p class="text-xl font-bold text-brand-500">${Math.max(0, 35 - daysPassed)} dias</p>
-                    </div>
-                </div>
-
-                <!-- Progress -->
-                <div class="w-full bg-slate-200 dark:bg-dark-700 rounded-full h-2 mb-6">
-                    <div class="bg-brand-500 h-2 rounded-full" style="width: ${progress}%"></div>
-                </div>
-
-                <!-- Rehearsal Toggle -->
-                <div class="bg-white dark:bg-dark-800 rounded-xl p-4 mb-6 shadow-sm border border-slate-100 dark:border-dark-700 flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-lg">
-                            <i data-lucide="masks"></i>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-sm">Tenho Ensaio Hoje</p>
-                            <p class="text-xs text-slate-500">Ativar rotina de mobilidade</p>
-                        </div>
-                    </div>
-                    <button onclick="toggleRehearsal()" class="w-12 h-6 rounded-full transition-colors relative ${isRehearsalDay ? 'bg-brand-500' : 'bg-slate-300 dark:bg-dark-600'}">
-                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 transition-all ${isRehearsalDay ? 'left-7' : 'left-1'}"></div>
-                    </button>
-                </div>
-
-                ${isRehearsalDay ? `
-                <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6 flex gap-3">
-                    <i data-lucide="alert-circle" class="text-amber-500 flex-shrink-0"></i>
-                    <div>
-                        <h3 class="font-bold text-amber-700 dark:text-amber-500 text-sm mb-1">Atenção: Hipoglicemia e Ensaio</h3>
-                        <p class="text-xs text-amber-600 dark:text-amber-400">Não saltes refeições. Come a cada 3h. Faz a rotina de mobilidade (25min) antes do ensaio.</p>
-                    </div>
-                </div>
-                ` : ''}
-
-                <!-- Macros -->
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-white dark:bg-dark-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-dark-700">
-                        <div class="flex items-center gap-2 mb-2 text-slate-500">
-                            <i data-lucide="flame" class="w-4 h-4"></i>
-                            <span class="text-xs font-semibold uppercase">Calorias</span>
-                        </div>
-                        <p class="text-2xl font-bold">${goal.kcal}</p>
-                        <p class="text-xs text-slate-400 mt-1">Alvo diário</p>
-                    </div>
-                    <div class="bg-white dark:bg-dark-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-dark-700">
-                        <div class="flex items-center gap-2 mb-2 text-slate-500">
-                            <i data-lucide="beef" class="w-4 h-4"></i>
-                            <span class="text-xs font-semibold uppercase">Proteína</span>
-                        </div>
-                        <p class="text-2xl font-bold">${goal.prot}g</p>
-                        <p class="text-xs text-slate-400 mt-1">Principalmente ovos</p>
-                    </div>
-                    <div class="bg-white dark:bg-dark-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-dark-700">
-                        <div class="flex items-center gap-2 mb-2 text-slate-500">
-                            <i data-lucide="footprints" class="w-4 h-4"></i>
-                            <span class="text-xs font-semibold uppercase">Passos</span>
-                        </div>
-                        <p class="text-2xl font-bold">${goal.steps}</p>
-                        <p class="text-xs text-slate-400 mt-1">Meta diária</p>
-                    </div>
-                    <div class="bg-white dark:bg-dark-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-dark-700">
-                        <div class="flex items-center gap-2 mb-2 text-slate-500">
-                            <i data-lucide="droplets" class="w-4 h-4"></i>
-                            <span class="text-xs font-semibold uppercase">Água</span>
-                        </div>
-                        <p class="text-2xl font-bold">2.5L</p>
-                        <p class="text-xs text-slate-400 mt-1">Mínimo</p>
-                    </div>
-                </div>
-
-                <!-- Today's Workout -->
-                <h3 class="font-bold text-lg mb-3">Treino de Hoje: ${todayWorkout.type}</h3>
-                <div class="bg-slate-800 text-white p-4 rounded-xl shadow-sm mb-6 relative overflow-hidden">
-                    <div class="absolute -right-4 -bottom-4 opacity-10">
-                        <i data-lucide="dumbbell" class="w-24 h-24"></i>
-                    </div>
-                    <ul class="text-sm space-y-2 relative z-10">
-                        ${getWorkoutExercises(selectedDay, selectedWeek).slice(0, 3).map(ex => `<li>• ${ex}</li>`).join('')}
-                        ${getWorkoutExercises(selectedDay, selectedWeek).length > 3 ? '<li class="text-slate-400 text-xs mt-2">+ Ver completo na tab Treino</li>' : ''}
-                    </ul>
-                </div>
-            `;
-            document.getElementById('app-content').innerHTML = html;
-            lucide.createIcons();
-        }
-
-        function getWorkoutExercises(day, week) {
-            if (workouts[day].type !== "Força") return workouts[day].exercises;
+            const diffTime = today - protocolStart;
+            let day = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
             
-            if (week === 2 && w2Workouts[1]) return w2Workouts[1];
-            if (week === 3 && w3Workouts[1]) return w3Workouts[1];
-            if (week === 4 && w4Workouts[1]) return w4Workouts[1];
-            if (week === 5 && w5Workouts[1]) return w5Workouts[1];
+            if (day < 1) day = 1; // Not started yet, show day 1
+            if (day > 35) day = 35; // Finished, cap at 35
             
-            return workouts[day].exercises; // Fallback to week 1
+            state.currentDay = day;
+            state.actualDate = today;
         }
 
-        function renderNutrition() {
-            const dayMeals = baseDiet[selectedDay] || baseDiet[1];
-            
-            let filteredMeals = dayMeals;
-            if(dietFilter === 'airfryer') filteredMeals = dayMeals.filter(m => m.airfryer);
-            if(dietFilter === 'fish') filteredMeals = dayMeals.filter(m => m.fish);
-            if(dietFilter === 'choc') filteredMeals = dayMeals.filter(m => m.choc);
-
-            const html = `
-                <div class="mb-4">
-                    <h2 class="text-2xl font-bold">Plano Alimentar</h2>
-                    <p class="text-sm text-slate-500">Metas ajustadas para a Semana ${selectedWeek}</p>
-                </div>
-
-                <!-- Selectors -->
-                <div class="flex gap-2 mb-4 overflow-x-auto hide-scrollbar pb-2">
-                    ${[1,2,3,4,5].map(w => `
-                        <button onclick="setWeek(${w})" class="px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors border ${selectedWeek === w ? 'bg-slate-800 text-white border-slate-800 dark:bg-white dark:text-dark-900 dark:border-white' : 'bg-white text-slate-600 border-slate-200 dark:bg-dark-800 dark:text-slate-300 dark:border-dark-700'}">Semana ${w}</button>
-                    `).join('')}
-                </div>
-                
-                <div class="flex gap-2 mb-6 overflow-x-auto hide-scrollbar pb-2">
-                    ${[1,2,3,4,5,6,0].map(d => `
-                        <button onclick="setDay(${d})" class="px-3 py-2 flex flex-col items-center rounded-xl min-w-[60px] transition-colors border ${selectedDay === d ? 'bg-brand-50 text-brand-700 border-brand-200 dark:bg-brand-900/20 dark:text-brand-400 dark:border-brand-800/50' : 'bg-white text-slate-500 border-slate-200 dark:bg-dark-800 dark:text-slate-400 dark:border-dark-700'}">
-                            <span class="text-xs mb-1">${getDayName(d).substring(0,3)}</span>
-                        </button>
-                    `).join('')}
-                </div>
-
-                <!-- Filters -->
-                <div class="flex gap-2 mb-4">
-                    <button onclick="setFilter('all')" class="px-3 py-1 rounded-full text-xs font-medium ${dietFilter === 'all' ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-slate-100 text-slate-500 dark:bg-dark-700 dark:text-slate-400'}">Tudo</button>
-                    <button onclick="setFilter('airfryer')" class="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${dietFilter === 'airfryer' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-slate-100 text-slate-500 dark:bg-dark-700 dark:text-slate-400'}"><i data-lucide="wind" class="w-3 h-3"></i> Airfryer</button>
-                    <button onclick="setFilter('fish')" class="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${dietFilter === 'fish' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-slate-100 text-slate-500 dark:bg-dark-700 dark:text-slate-400'}"><i data-lucide="fish" class="w-3 h-3"></i> Peixe</button>
-                </div>
-
-                <!-- Timeline -->
-                <div class="space-y-4 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 dark:before:via-dark-700 before:to-transparent">
-                    ${filteredMeals.length === 0 ? '<p class="text-center text-slate-500 py-8">Nenhuma refeição corresponde ao filtro neste dia.</p>' : ''}
-                    
-                    ${filteredMeals.map((meal, index) => `
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <!-- Timeline Dot -->
-                            <div class="flex items-center justify-center w-8 h-8 rounded-full border-4 border-slate-50 dark:border-dark-900 bg-brand-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 ml-[2px]">
-                                <span class="text-[10px] font-bold">${meal.time.split(':')[0]}</span>
-                            </div>
-                            
-                            <!-- Card -->
-                            <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl shadow-sm border border-slate-100 dark:border-dark-700 bg-white dark:bg-dark-800 ml-4 md:ml-0 group-odd:mr-4">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="font-bold text-sm">${meal.name}</h3>
-                                    <span class="text-xs font-medium text-slate-400">${meal.time}</span>
-                                </div>
-                                <ul class="space-y-1">
-                                    ${meal.items.map(item => `
-                                        <li class="text-xs flex justify-between border-b border-slate-50 dark:border-dark-700/50 pb-1 last:border-0">
-                                            <span class="text-slate-600 dark:text-slate-300">${item.n}</span>
-                                            <span class="font-medium text-slate-800 dark:text-slate-200 ml-2">${item.q}</span>
-                                        </li>
-                                    `).join('')}
-                                </ul>
-                                ${(meal.airfryer || meal.fish || meal.choc) ? `
-                                <div class="mt-3 flex gap-1">
-                                    ${meal.airfryer ? '<span class="text-[10px] bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded flex items-center gap-1"><i data-lucide="wind" class="w-3 h-3"></i> Airfryer</span>' : ''}
-                                    ${meal.fish ? '<span class="text-[10px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded flex items-center gap-1"><i data-lucide="fish" class="w-3 h-3"></i> Lata</span>' : ''}
-                                    ${meal.choc ? '<span class="text-[10px] bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 px-2 py-0.5 rounded flex items-center gap-1"><i data-lucide="heart" class="w-3 h-3"></i> Extra</span>' : ''}
-                                </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            document.getElementById('app-content').innerHTML = html;
-            lucide.createIcons();
+        // --- THEME LOGIC ---
+        function setupTheme() {
+            const btn = document.getElementById('theme-toggle');
+            btn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+            });
         }
 
-        function renderWorkout() {
-            const todayWorkout = workouts[selectedDay];
-            const exercisesList = getWorkoutExercises(selectedDay, selectedWeek);
-
-            const html = `
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold">Treino e Mobilidade</h2>
-                    <p class="text-sm text-slate-500">${getDayName(selectedDay)} - Semana ${selectedWeek}</p>
-                </div>
-
-                <div class="flex gap-2 mb-6 overflow-x-auto hide-scrollbar pb-2">
-                    ${[1,2,3,4,5,6,0].map(d => `
-                        <button onclick="setDay(${d})" class="px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors border flex flex-col items-center min-w-[70px] ${selectedDay === d ? 'bg-slate-800 text-white border-slate-800 dark:bg-white dark:text-dark-900 dark:border-white' : 'bg-white text-slate-500 border-slate-200 dark:bg-dark-800 dark:text-slate-400 dark:border-dark-700'}">
-                            <span>${getDayName(d).substring(0,3)}</span>
-                            <span class="text-[10px] mt-1 opacity-70">${workouts[d].type}</span>
-                        </button>
-                    `).join('')}
-                </div>
-
-                ${isRehearsalDay ? `
-                <div class="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl p-5 mb-6">
-                    <div class="flex items-center gap-2 mb-3 text-indigo-700 dark:text-indigo-400">
-                        <i data-lucide="masks" class="w-5 h-5"></i>
-                        <h3 class="font-bold">Rotina de Mobilidade (Ensaio)</h3>
-                    </div>
-                    <p class="text-xs text-indigo-600 dark:text-indigo-300 mb-3">Fazer 25 minutos antes do ensaio. Não acumular treino pesado hoje se o corpo pedir descanso.</p>
-                    <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                        <li class="flex items-start gap-2"><div class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></div> Rotação de ombros: 30s frente + 30s trás</li>
-                        <li class="flex items-start gap-2"><div class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></div> Abertura torácica (4 apoios): 8 rep/lado</li>
-                        <li class="flex items-start gap-2"><div class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></div> Hip flexor em afundo: 45s/lado</li>
-                        <li class="flex items-start gap-2"><div class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></div> Ponte glútea: 3 × 15 rep</li>
-                        <li class="flex items-start gap-2"><div class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></div> Gato-vaca: 10 ciclos lentos</li>
-                        <li class="flex items-start gap-2"><div class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0"></div> Respiração diafragmática: 2 min</li>
-                    </ul>
-                </div>
-                ` : ''}
-
-                <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-slate-100 dark:border-dark-700 overflow-hidden">
-                    <div class="bg-slate-50 dark:bg-dark-900 p-4 border-b border-slate-100 dark:border-dark-700">
-                        <div class="flex items-center gap-2">
-                            ${todayWorkout.type === 'Força' ? '<i data-lucide="dumbbell" class="text-brand-500 w-5 h-5"></i>' : 
-                              todayWorkout.type === 'Cardio' ? '<i data-lucide="activity" class="text-brand-500 w-5 h-5"></i>' : 
-                              '<i data-lucide="bed-double" class="text-slate-400 w-5 h-5"></i>'}
-                            <h3 class="font-bold text-lg">${todayWorkout.type}</h3>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <ul class="space-y-4">
-                            ${exercisesList.map((ex, i) => `
-                                <li class="flex gap-3 items-start">
-                                    <div class="w-6 h-6 rounded bg-slate-100 dark:bg-dark-700 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0 mt-0.5">${i+1}</div>
-                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300 leading-snug">${ex}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                </div>
-            `;
-            document.getElementById('app-content').innerHTML = html;
-            lucide.createIcons();
-        }
-
-        function renderShopping() {
-            const html = `
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold">Compras e Orçamento</h2>
-                    <p class="text-sm text-slate-500">Teto máximo: 90€/mês | Real: ~82,78€</p>
-                </div>
-
-                <div class="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-xl p-4 mb-6 flex gap-3">
-                    <i data-lucide="check-circle" class="text-brand-500 shrink-0"></i>
-                    <div>
-                        <p class="text-sm text-brand-800 dark:text-brand-300"><b>Regras:</b> Proteína base são ovos. Sem laticínios, sem bebidas vegetais, sem oleaginosas (caras). Frango max 2x/semana.</p>
-                    </div>
-                </div>
-
-                <div class="space-y-6">
-                    <!-- Mensal -->
-                    <div>
-                        <h3 class="font-bold text-sm text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i> Compras Mensais Fixas</h3>
-                        <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-slate-100 dark:border-dark-700 overflow-hidden">
-                            <ul class="divide-y divide-slate-100 dark:divide-dark-700">
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="droplet" class="w-4 h-4 text-slate-400"></i>Azeite virgem extra 1L</span> <span class="font-medium">5,85€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="wheat" class="w-4 h-4 text-slate-400"></i>Aveia 1kg</span> <span class="font-medium">3,00€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="package" class="w-4 h-4 text-slate-400"></i>Arroz branco 2kg</span> <span class="font-medium">2,66€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="package" class="w-4 h-4 text-slate-400"></i>Lentilhas secas 1kg</span> <span class="font-medium">2,14€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="fish" class="w-4 h-4 text-slate-400"></i>Atum pack 6×60g</span> <span class="font-medium">4,42€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="fish" class="w-4 h-4 text-slate-400"></i>Sardinha lata × 4</span> <span class="font-medium">3,96€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="heart" class="w-4 h-4 text-slate-400"></i>Chocolate negro 75% × 2</span> <span class="font-medium">2,38€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 text-slate-400"></i>Feijão e Grão lata × 5</span> <span class="font-medium">4,45€</span></li>
-                            </ul>
-                            <div class="bg-slate-50 dark:bg-dark-900 p-3 text-right text-xs font-bold text-slate-500">Subtotal: ~28,86€</div>
-                        </div>
-                    </div>
-
-                    <!-- Semanal -->
-                    <div>
-                        <h3 class="font-bold text-sm text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2"><i data-lucide="shopping-basket" class="w-4 h-4"></i> Compras Semanais (Frescos)</h3>
-                        <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-slate-100 dark:border-dark-700 overflow-hidden">
-                            <ul class="divide-y divide-slate-100 dark:divide-dark-700">
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="egg" class="w-4 h-4 text-slate-400"></i>Ovos 12 un</span> <span class="font-medium">1,29€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="drumstick" class="w-4 h-4 text-slate-400"></i>Peito frango 250g</span> <span class="font-medium">2,34€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="banana" class="w-4 h-4 text-slate-400"></i>Banana 1kg</span> <span class="font-medium">1,20€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="apple" class="w-4 h-4 text-slate-400"></i>Maçã 1kg</span> <span class="font-medium">1,50€</span></li>
-                                <li class="p-3 flex justify-between text-sm"><span class="flex items-center gap-2"><i data-lucide="carrot" class="w-4 h-4 text-slate-400"></i>Vegetais variados (Cenoura, Tomate, Curgete, Espinafre, Batata)</span> <span class="font-medium">6,21€</span></li>
-                            </ul>
-                            <div class="bg-slate-50 dark:bg-dark-900 p-3 text-right text-xs font-bold text-slate-500">Subtotal: ~12,54€ / semana</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('app-content').innerHTML = html;
-            lucide.createIcons();
-        }
-
-        // --- INTERACTIVITY ---
-
+        // --- NAVIGATION LOGIC ---
         function switchTab(tabId) {
-            currentTab = tabId;
+            // Hide all
+            document.querySelectorAll('section[data-view]').forEach(s => s.classList.remove('active'));
+            // Show target
+            document.querySelector(`section[data-view="${tabId}"]`).classList.add('active');
             
-            // Update UI
+            // Update nav buttons
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                if (btn.dataset.tab === tabId) {
-                    btn.classList.add('text-brand-500');
-                    btn.classList.remove('text-slate-400');
+                if (btn.dataset.target === tabId) {
+                    btn.classList.add('text-brand-600', 'dark:text-brand-400');
+                    btn.classList.remove('text-gray-400');
                 } else {
-                    btn.classList.remove('text-brand-500');
-                    btn.classList.add('text-slate-400');
+                    btn.classList.remove('text-brand-600', 'dark:text-brand-400');
+                    btn.classList.add('text-gray-400');
                 }
             });
 
-            // Render content
-            if (tabId === 'dashboard') renderDashboard();
-            if (tabId === 'diet') renderNutrition();
-            if (tabId === 'workout') renderWorkout();
-            if (tabId === 'shopping') renderShopping();
+            if(tabId === 'dashboard') updateDashboard();
+        }
+
+        // --- DASHBOARD RENDERING ---
+        function updateDashboard() {
+            const isBefore = new Date() < protocolStart;
+            const isAfter = new Date() > protocolEnd;
             
-            window.scrollTo(0, 0);
-        }
-
-        function toggleRehearsal() {
-            isRehearsalDay = !isRehearsalDay;
-            if(currentTab === 'dashboard') renderDashboard();
-            if(currentTab === 'workout') renderWorkout();
-        }
-
-        function setWeek(w) {
-            selectedWeek = w;
-            if(currentTab === 'diet') renderNutrition();
-            if(currentTab === 'workout') renderWorkout();
-        }
-
-        function setDay(d) {
-            selectedDay = d;
-            if(currentTab === 'diet') renderNutrition();
-            if(currentTab === 'workout') renderWorkout();
-        }
-
-        function setFilter(f) {
-            dietFilter = f;
-            renderNutrition();
-        }
-
-        function setupTheme() {
-            const html = document.documentElement;
-            const themeToggle = document.getElementById('themeToggle');
-            const themeIcon = document.getElementById('themeIcon');
+            // Header
+            const options = { day: 'numeric', month: 'long' };
+            const todayStr = state.actualDate.toLocaleDateString('pt-PT', options);
+            document.getElementById('header-date').textContent = todayStr;
+            document.getElementById('dash-date').textContent = todayStr;
             
-            // Default dark based on your request, but allow toggle
-            const toggleTheme = () => {
-                if (html.classList.contains('dark')) {
-                    html.classList.remove('dark');
-                    themeIcon.setAttribute('data-lucide', 'sun');
-                } else {
-                    html.classList.add('dark');
-                    themeIcon.setAttribute('data-lucide', 'moon');
-                }
-                lucide.createIcons();
-            };
+            document.getElementById('header-day-badge').textContent = `DIA ${state.currentDay}`;
+            document.getElementById('dash-day').textContent = `Dia ${state.currentDay}`;
+            
+            // Countdown
+            if (isBefore) {
+                const daysToStart = Math.ceil((protocolStart - new Date()) / (1000 * 60 * 60 * 24));
+                document.getElementById('dash-countdown').textContent = `Faltam ${daysToStart} dias`;
+            } else if (isAfter) {
+                document.getElementById('dash-countdown').textContent = `Concluído!`;
+            } else {
+                document.getElementById('dash-countdown').textContent = `${35 - state.currentDay + 1} dias`;
+            }
 
-            themeToggle.addEventListener('click', toggleTheme);
-            lucide.createIcons();
+            // Day Info
+            const currentWeek = Math.ceil(state.currentDay / 7);
+            const goals = weeklyGoals[currentWeek] || weeklyGoals[5];
+            document.getElementById('dash-cal').textContent = goals.cal + " kcal";
+            document.getElementById('dash-pro').textContent = goals.pro + "g";
+            document.getElementById('dash-steps').textContent = goals.steps.toLocaleString('pt-PT');
+
+            const dayData = fullDietPlan[state.currentDay - 1];
+            document.getElementById('dash-type-badge').innerHTML = dayData.type.includes('Força') ? 'Força 💪' : (dayData.type.includes('Cardio') ? 'Cardio 🏃' : 'Descanso 🚶');
+            
+            // Next meal basic logic (just shows the first one for simplicity in this static context)
+            document.getElementById('dash-next-meal').textContent = `Próxima: ${dayData.meals[1].name} (${dayData.meals[1].time})`;
+
+            // Tracking Update on Dash
+            document.getElementById('dash-water-text').textContent = `${state.waterGlasses}/12`;
+            document.getElementById('dash-water-bar').style.width = `${(state.waterGlasses / 12) * 100}%`;
+
+            // Tracking Tab Init
+            setupTrackingView(dayData);
         }
 
-        // Boot
-        init();
+        // --- TRACKING VIEW LOGIC ---
+        function setupTrackingView(dayData) {
+            document.getElementById('track-mission').textContent = dayData.type.includes('Força') ? 'Treino de Força / Calistenia' : (dayData.type.includes('Cardio') ? 'Cardio Zona 2 (40 min)' : 'Descanso ou Caminhada leve');
+            
+            const timerContainer = document.getElementById('cardio-timer-container');
+            if (dayData.type.includes('Cardio')) {
+                timerContainer.classList.remove('hidden');
+            } else {
+                timerContainer.classList.add('hidden');
+            }
+            
+            updateSummaryCounter();
+        }
+
+        function renderWaterGrid() {
+            const grid = document.getElementById('water-grid');
+            grid.innerHTML = '';
+            for (let i = 1; i <= 12; i++) {
+                const isFilled = i <= state.waterGlasses;
+                const iconClass = isFilled ? 'fa-solid fa-glass-water glass-active' : 'fa-solid fa-glass-water glass-inactive';
+                const bgClass = isFilled ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800' : 'bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700';
+                
+                grid.innerHTML += `
+                    <button onclick="setWater(${i})" class="aspect-square flex justify-center items-center rounded-lg border transition-all ${bgClass}">
+                        <i class="${iconClass} text-xl"></i>
+                    </button>
+                `;
+            }
+            
+            const liters = (state.waterGlasses * 0.25).toFixed(1);
+            document.getElementById('water-status').textContent = `${state.waterGlasses} / 12 copos — ${liters}L de 3L`;
+            
+            // Auto-check water in summary
+            document.getElementById('check-water').checked = state.waterGlasses >= 12;
+            updateSummaryCounter();
+            
+            // Update dash
+            document.getElementById('dash-water-text').textContent = `${state.waterGlasses}/12`;
+            document.getElementById('dash-water-bar').style.width = `${(state.waterGlasses / 12) * 100}%`;
+        }
+
+        function setWater(amount) {
+            // Toggle off if clicking the currently active one (reduces by 1)
+            if (amount === state.waterGlasses) {
+                state.waterGlasses = amount - 1;
+            } else {
+                state.waterGlasses = amount;
+            }
+            renderWaterGrid();
+        }
+
+        function resetWater() {
+            state.waterGlasses = 0;
+            renderWaterGrid();
+        }
+
+        function updateSummary() {
+            document.getElementById('check-act').checked = document.getElementById('activity-checkbox').checked;
+            updateSummaryCounter();
+        }
+
+        function updateSummaryCounter() {
+            const c1 = document.getElementById('check-act').checked;
+            const c2 = document.getElementById('check-water').checked;
+            const cbx = document.querySelectorAll('.summary-cb');
+            let count = (c1 ? 1 : 0) + (c2 ? 1 : 0);
+            cbx.forEach(c => { if(c.checked) count++; });
+            
+            document.getElementById('summary-counter').textContent = `${count} / 5 ✅`;
+            
+            if (count === 5) {
+                document.getElementById('summary-msg').classList.remove('hidden');
+            } else {
+                document.getElementById('summary-msg').classList.add('hidden');
+            }
+        }
+
+        // --- TIMER LOGIC ---
+        function toggleTimer() {
+            const btn = document.getElementById('btn-timer-toggle');
+            if (state.timer.isRunning) {
+                state.timer.isRunning = false;
+                btn.innerHTML = '<i class="fa-solid fa-play"></i> Continuar';
+                btn.classList.replace('bg-orange-500', 'bg-brand-500');
+                btn.classList.replace('hover:bg-orange-600', 'hover:bg-brand-600');
+            } else {
+                state.timer.isRunning = true;
+                btn.innerHTML = '<i class="fa-solid fa-pause"></i> Pausar';
+                btn.classList.replace('bg-brand-500', 'bg-orange-500');
+                btn.classList.replace('hover:bg-brand-600', 'hover:bg-orange-600');
+            }
+        }
+
+        function resetTimer() {
+            state.timer.isRunning = false;
+            state.timer.timeLeft = 40 * 60;
+            const btn = document.getElementById('btn-timer-toggle');
+            btn.innerHTML = '<i class="fa-solid fa-play"></i> Iniciar';
+            btn.classList.replace('bg-orange-500', 'bg-brand-500');
+            btn.classList.replace('hover:bg-orange-600', 'hover:bg-brand-600');
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            if (state.timer.isRunning && state.timer.timeLeft > 0) {
+                state.timer.timeLeft--;
+            } else if (state.timer.isRunning && state.timer.timeLeft <= 0) {
+                state.timer.isRunning = false;
+                alert("Parabéns! 40 minutos de Cardio concluídos.");
+                document.getElementById('activity-checkbox').checked = true;
+                updateSummary();
+                resetTimer();
+            }
+            
+            const mins = Math.floor(state.timer.timeLeft / 60).toString().padStart(2, '0');
+            const secs = (state.timer.timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+        }
+
+        // --- DIET RENDERING ---
+        function populateDietSelect() {
+            const sel = document.getElementById('diet-day-select');
+            fullDietPlan.forEach((d, index) => {
+                sel.innerHTML += `<option value="${d.dayNum}">Dia ${d.dayNum} - ${d.dateStr} (${d.type})</option>`;
+            });
+        }
+
+        function renderDietDay(dayNum) {
+            const d = fullDietPlan[dayNum - 1];
+            const container = document.getElementById('diet-content');
+            
+            let html = '';
+            
+            if (d.note) {
+                html += `<div class="bg-brand-50 text-brand-800 dark:bg-brand-900/20 dark:text-brand-200 p-3 rounded-lg text-sm border border-brand-200 dark:border-brand-800 mb-4"><i class="fa-solid fa-circle-info"></i> ${d.note}</div>`;
+            }
+
+            d.meals.forEach(meal => {
+                const airfryerBadge = meal.isAirfryer ? `<span class="bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300 text-xs px-2 py-0.5 rounded-full ml-2 border border-orange-200 dark:border-orange-800"><i class="fa-solid fa-fire-burner"></i> Airfryer</span>` : '';
+                
+                // Highlight proteins
+                let highlightedContent = meal.content
+                    .replace(/Ovos mexidos|Omelete|Ovos escalfados|Ovos estrelados/g, '<span class="font-bold text-amber-600 dark:text-amber-400">$&</span>')
+                    .replace(/Peito de frango/g, '<span class="font-bold text-red-500">$&</span>')
+                    .replace(/Sardinha|Atum/g, '<span class="font-bold text-blue-500">$&</span>');
+
+                html += `
+                    <div class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-sm text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 px-2 py-1 rounded">${meal.time}</span>
+                            <h4 class="font-bold text-slate-800 dark:text-slate-200 flex-1 ml-3">${meal.name} ${airfryerBadge}</h4>
+                        </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 pl-[3.25rem] leading-relaxed">${highlightedContent}</p>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // --- WORKOUT RENDERING ---
+        function renderWorkoutWeek(weekNum) {
+            const wData = workouts[weekNum];
+            const container = document.getElementById('workout-content');
+            
+            let html = `<ul class="divide-y divide-gray-100 dark:divide-slate-700">`;
+            wData.forEach((exercise, index) => {
+                html += `
+                    <li class="p-4 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition">
+                        <span class="bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">${index + 1}</span>
+                        <span class="text-sm text-slate-700 dark:text-slate-300">${exercise}</span>
+                    </li>
+                `;
+            });
+            html += `</ul>`;
+            
+            container.innerHTML = html;
+        }
+
+        // Run Initialization
+        window.addEventListener('DOMContentLoaded', init);
 
     </script>
 </body>
